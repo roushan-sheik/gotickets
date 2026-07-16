@@ -11,11 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+
 
 type CustomValidator struct {
 	validator *validator.Validate
@@ -34,7 +30,7 @@ func main() {
 	dsn := "host=localhost user=postgres password=postgres dbname=gotickets port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&user.User{})
 
 	e.Validator = &CustomValidator{validator: validator.New()}
 
