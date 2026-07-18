@@ -22,16 +22,16 @@ func (h handler) CreateUser(c *echo.Context) error {
 	var req dto.CreateRquest
 
 	if err := c.Bind(&req); err != nil {
-		return httpresponse.NewError(http.StatusBadRequest, "Invalid request payload", err.Error())
+		return c.JSON(http.StatusBadRequest, httpresponse.NewError(http.StatusBadRequest, "Invalid request payload", err.Error()))
 	}
 
 	if err := c.Validate(req); err != nil {
-		return httpresponse.NewError(http.StatusBadRequest, "Validation failed", err.Error())
+		return c.JSON(http.StatusBadRequest, httpresponse.NewError(http.StatusBadRequest, "Validation failed", err.Error()))
 	}
 
 	response, err := h.service.CreateUser(req)
 	if err != nil {
-		return httpresponse.NewError(http.StatusBadRequest, "Error creating user", err.Error())
+		return c.JSON(http.StatusBadRequest, httpresponse.NewError(http.StatusBadRequest, "Error creating user", err.Error()))
 	}
 
 	return c.JSON(http.StatusOK, response)
