@@ -11,8 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
-
 type CustomValidator struct {
 	validator *validator.Validate
 }
@@ -43,13 +41,10 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c *echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"message": "Hello, World!"})
+		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	repo := user.NewRepository(db)
-	service := user.NewService(repo)
-	handler := user.NewHandler(service)
-	e.POST("/users", handler.CreateUser)
+	user.RegisterRoutes(e, db)
 
 	if err := e.Start(":5000"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
