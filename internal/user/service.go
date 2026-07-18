@@ -15,11 +15,17 @@ func NewService(repo Repository) *service {
 func (s service) CreateUser(req dto.CreateRquest) (*dto.Response, error) {
 
 	user := User{
-		Name:  req.Name,
-		Email: req.Email,
-		// Password: req.Password,
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: req.Password,
 	}
-	err := s.repo.CreateUser(&user)
+
+	err := user.HashPassword(user.Password)
+	if err != nil {
+		return &dto.Response{}, err
+	}
+
+	err = s.repo.CreateUser(&user)
 
 	if err != nil {
 		return &dto.Response{}, err
@@ -29,6 +35,7 @@ func (s service) CreateUser(req dto.CreateRquest) (*dto.Response, error) {
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
+		Password:  user.Password,
 		CreatedAt: user.CreatedAt,
 	}
 
