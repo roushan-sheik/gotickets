@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"gotickets/internal/config"
 	"gotickets/internal/user"
 	"net/http"
 
@@ -25,7 +27,9 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 func main() {
 	e := echo.New()
 
-	dsn := "host=localhost user=postgres password=postgres dbname=gotickets port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	config := config.LoadEnv()
+
+	dsn := config.Dsn
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 
 	db.AutoMigrate(&user.User{})
@@ -35,7 +39,7 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	e.Logger.Info("Database connected successfully...")
+	e.Logger.Info("Database connected successfully")
 
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
@@ -46,7 +50,13 @@ func main() {
 
 	user.RegisterRoutes(e, db)
 
-	if err := e.Start(":5000"); err != nil {
+	port := fmt.Sprintf(":%s", config.Port)
+
+	fmt.Printf("🚀🚀Server running on http://localhost%s\n", port)
+
+	err = e.Start(port)
+
+	if err != nil {
 		e.Logger.Error("failed to start server", "error", err)
 	}
 }
