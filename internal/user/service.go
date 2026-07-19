@@ -2,18 +2,22 @@ package user
 
 import (
 	"errors"
+	"fmt"
+	"gotickets/internal/auth"
 	"gotickets/internal/user/dto"
 )
 
-type service struct {
-	repo Repository
-}
-
 var ErrInvalidCredentials = errors.New("invalid email or password")
 
-func NewService(repo Repository) *service {
+type service struct {
+	repo Repository
+	jwt  auth.JWTService
+}
+
+func NewService(repo Repository, jwt auth.JWTService) *service {
 	return &service{
 		repo: repo,
+		jwt:  jwt,
 	}
 }
 
@@ -30,18 +34,22 @@ func (s service) CreateUser(req dto.CreateRquest) (*dto.Response, error) {
 		return &dto.Response{}, err
 	}
 
-	// generate token
-
 	err = s.repo.CreateUser(&user)
-
 	if err != nil {
-		return &dto.Response{}, err
+		return nil, fmt.Errorf("Failed to create user: %w", err)
+	}
+
+	// generate token
+	token, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to generate token: %w", err)
 	}
 
 	response := dto.Response{
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
+		Token:     token,
 		CreatedAt: user.CreatedAt,
 	}
 
@@ -67,15 +75,16 @@ func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
 		return nil, ErrInvalidCredentials
 	}
 
-	err = s.repo.CreateUser(user)
+	token, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to generate token: %w", err)
 	}
 
 	response := dto.Response{
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
+		Token:     token,
 		CreatedAt: user.CreatedAt,
 	}
 

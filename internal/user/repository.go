@@ -43,7 +43,7 @@ func (r repository) GetUserByEmail(user *User) (*User, error) {
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrorAlreadyExist
+			return nil, nil
 		}
 		return nil, result.Error
 	}

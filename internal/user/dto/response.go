@@ -6,5 +6,6 @@ type Response struct {
 	ID        uint      `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
+	Token     string    `json:"token,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 }
