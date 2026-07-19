@@ -57,6 +57,6 @@ func main() {
 	err = e.Start(port)
 
 	if err != nil {
-		e.Logger.Error("failed to start server", "error", err)
+		e.Logger.Error("failed to start server:", "error", err)
 	}
 }
