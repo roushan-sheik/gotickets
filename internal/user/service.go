@@ -40,17 +40,23 @@ func (s service) CreateUser(req dto.CreateRquest) (*dto.Response, error) {
 	}
 
 	// generate token
-	token, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
+	accessToken, refreshToken, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate token: %w", err)
 	}
 
+	user.RefreshToken = refreshToken
+	if err := s.repo.UpdateUser(&user); err != nil {
+		return nil, fmt.Errorf("Failed to save refresh token: %w", err)
+	}
+
 	response := dto.Response{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Token:     token,
-		CreatedAt: user.CreatedAt,
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		CreatedAt:    user.CreatedAt,
 	}
 
 	return &response, nil
@@ -75,19 +81,61 @@ func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
 		return nil, ErrInvalidCredentials
 	}
 
-	token, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
+	accessToken, refreshToken, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to generate token: %w", err)
 	}
 
+	user.RefreshToken = refreshToken
+	if err := s.repo.UpdateUser(user); err != nil {
+		return nil, fmt.Errorf("Failed to save refresh token: %w", err)
+	}
+
 	response := dto.Response{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Token:     token,
-		CreatedAt: user.CreatedAt,
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		CreatedAt:    user.CreatedAt,
 	}
 
 	return &response, nil
 
+}
+
+func (s *service) RefreshToken(token string) (*dto.Response, error) {
+	_, err := s.jwt.ValidateToken(token)
+	if err != nil {
+		return nil, errors.New("invalid refresh token")
+	}
+
+	user, err := s.repo.GetUserByRefreshToken(token)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("invalid refresh token")
+	}
+
+	accessToken, refreshToken, err := s.jwt.GenerateToken(user.ID, user.Name, user.Email)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to generate token: %w", err)
+	}
+
+	user.RefreshToken = refreshToken
+	if err := s.repo.UpdateUser(user); err != nil {
+		return nil, fmt.Errorf("Failed to save refresh token: %w", err)
+	}
+
+	response := dto.Response{
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		CreatedAt:    user.CreatedAt,
+	}
+
+	return &response, nil
 }
