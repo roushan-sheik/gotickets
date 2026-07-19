@@ -1,6 +1,7 @@
 package user
 
 import (
+	"gotickets/internal/auth"
 	"gotickets/internal/httpresponse"
 	"gotickets/internal/user/dto"
 	"net/http"
@@ -55,4 +56,12 @@ func (h handler) LoginUser(c *echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+func (h handler) GetMe(c *echo.Context) error {
+	userClaims, ok := c.Get("user").(*auth.JwtCustomClaims)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, httpresponse.NewError(http.StatusUnauthorized, "Unauthorized", "User not found in context"))
+	}
+	return c.JSON(http.StatusOK, userClaims)
 }
