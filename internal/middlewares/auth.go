@@ -11,17 +11,22 @@ import (
 func AuthMiddleware(jwtService auth.JWTService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
+			var tokenString string
+
 			authHeader := c.Request().Header.Get("Authorization")
-			if authHeader == "" {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Missing Authorization header"})
+			if authHeader != "" {
+				parts := strings.Split(authHeader, " ")
+				if len(parts) != 2 || parts[0] != "Bearer" {
+					return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid Authorization format. Expected Bearer <token>"})
+				}
+				tokenString = parts[1]
+			} else if cookie, err := c.Cookie("access_token"); err == nil {
+				tokenString = cookie.Value
 			}
 
-			parts := strings.Split(authHeader, " ")
-			if len(parts) != 2 || parts[0] != "Bearer" {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid Authorization format. Expected Bearer <token>"})
+			if tokenString == "" {
+				return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Missing Authorization header or cookie"})
 			}
-
-			tokenString := parts[1]
 			claims, err := jwtService.ValidateToken(tokenString)
 			if err != nil {
 				return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid or expired token"})
