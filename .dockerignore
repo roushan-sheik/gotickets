@@ -11,9 +11,6 @@
 tmp/
 main
 
-# Documentation artifacts (not needed at runtime)
-docs/
-
 # Editor and OS files
 .idea/
 .vscode/
