@@ -2,6 +2,7 @@ package booking
 
 import (
 	"errors"
+	"gotickets/internal/auth"
 	"gotickets/internal/domain/booking/dto"
 	"gotickets/internal/domain/event"
 	"gotickets/internal/httpresponse"
@@ -19,8 +20,11 @@ func NewHandler(s *service) *handler {
 }
 
 func getCurrentUserID(c *echo.Context) (uint, bool) {
-	userId, ok := c.Get("user_id").(uint)
-	return userId, ok
+	claims, ok := c.Get("user").(*auth.JwtCustomClaims)
+	if !ok {
+		return 0, false
+	}
+	return claims.UserID, true
 }
 
 func bookingErrorResponse(c *echo.Context, err error) error {

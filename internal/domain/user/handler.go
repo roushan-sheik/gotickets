@@ -20,8 +20,8 @@ func NewHandler(service *service) *handler {
 	}
 }
 
-func (h handler) CreateUser(c *echo.Context) error {
-	var req dto.CreateRquest
+func (h *handler) CreateUser(c *echo.Context) error {
+	var req dto.CreateRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, httpresponse.NewError(http.StatusBadRequest, "Invalid request payload", err.Error()))
@@ -42,7 +42,7 @@ func (h handler) CreateUser(c *echo.Context) error {
 
 }
 
-func (h handler) LoginUser(c *echo.Context) error {
+func (h *handler) LoginUser(c *echo.Context) error {
 	var req dto.LoginRequest
 
 	if err := c.Bind(&req); err != nil {
@@ -63,7 +63,7 @@ func (h handler) LoginUser(c *echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h handler) GetMe(c *echo.Context) error {
+func (h *handler) GetMe(c *echo.Context) error {
 	userClaims, ok := c.Get("user").(*auth.JwtCustomClaims)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, httpresponse.NewError(http.StatusUnauthorized, "Unauthorized", "User not found in context"))
@@ -88,7 +88,7 @@ func setTokensInCookies(c *echo.Context, accessToken, refreshToken string) {
 	})
 }
 
-func (h handler) RefreshToken(c *echo.Context) error {
+func (h *handler) RefreshToken(c *echo.Context) error {
 	var token string
 	if cookie, err := c.Cookie("refresh_token"); err == nil {
 		token = cookie.Value

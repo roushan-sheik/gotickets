@@ -21,7 +21,7 @@ func NewService(repo Repository, jwt auth.JWTService) *service {
 	}
 }
 
-func (s service) CreateUser(req dto.CreateRquest) (*dto.Response, error) {
+func (s *service) CreateUser(req dto.CreateRequest) (*dto.Response, error) {
 
 	user := User{
 		Name:     req.Name,
