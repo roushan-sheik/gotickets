@@ -53,21 +53,8 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	}
 }
 
-// WelcomeHandler godoc
-// @Summary      Welcome to GoTickets API
-// @Description  Root endpoint to verify the API is running.
-// @Tags         System
-// @Produce      json
-// @Success      200  {object}  WelcomeResponse
-// @Router       / [get]
-func WelcomeHandler(c *echo.Context) error {
-	return c.JSON(http.StatusOK, WelcomeResponse{
-		Message:     "Welcome to GoTickets API",
-		Version:     "1.0.0",
-		Environment: "development",
-		Status:      "active",
-	})
-}
+
+
 
 // HealthCheckHandler godoc
 // @Summary      Health Check

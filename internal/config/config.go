@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -17,11 +16,10 @@ type Config struct {
 }
 
 func LoadEnv() *Config {
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// Load .env file for local development.
+	// In production (Docker), environment variables are injected by the runtime,
+	// so the absence of a .env file is expected and not an error.
+	_ = godotenv.Load()
 
 	return &Config{
 		Port:             os.Getenv("PORT"),
