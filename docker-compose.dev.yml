@@ -1,0 +1,30 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: gotickets_dev
+    ports:
+      - "${PORT:-5000}:${PORT:-5000}"
+    env_file:
+      - .env
+    # Allows the container to reach the host machine's PostgreSQL
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Mount the entire source tree so air detects file changes
+      - .:/app
+      # Separate named volume for Go module cache to avoid overwriting it
+      - go_modules:/go/pkg/mod
+    restart: unless-stopped
+    networks:
+      - gotickets_network
+
+volumes:
+  go_modules:
+    driver: local
+
+networks:
+  gotickets_network:
+    driver: bridge
