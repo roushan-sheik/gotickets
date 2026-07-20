@@ -46,6 +46,19 @@ Each domain within `internal/domain/` (e.g., `booking`, `user`) implements a sta
 - **ORM:** [GORM](https://gorm.io/)
 - **Authentication:** JWT (JSON Web Tokens)
 
+## Configuration
+
+The application utilizes environment variables for configuration. Create a `.env` file in the root directory and populate it with the following structure:
+
+```env
+PORT=5000
+DSN="host=localhost user=postgres password=postgres dbname=gotickets port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+JWT_ACCESS_TOKEN_SECRET="your_access_secret"
+JWT_REFRESH_TOKEN_SECRET="your_refresh_secret"
+JWT_ACCESS_TOKEN_EXPIRY="24h"
+JWT_REFRESH_TOKEN_EXPIRY="720h"
+```
+
 ---
 
 *This repository serves as a reference implementation for structuring scalable Go applications.*

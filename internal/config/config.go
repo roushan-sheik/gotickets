@@ -26,9 +26,9 @@ func LoadEnv() *Config {
 	return &Config{
 		Port:             os.Getenv("PORT"),
 		Dsn:              os.Getenv("DSN"),
-		JwtAccessSecret:  os.Getenv("JWT_ACCESS_SECRET"),
-		JwtRefreshSecret: os.Getenv("JWT_REFRESH_SECRET"),
-		JwtAccessExpiry:  os.Getenv("JWT_ACCESS_EXPIRY"),
-		JwtRefreshExpiry: os.Getenv("JWT_REFRESH_EXPIRY"),
+		JwtAccessSecret:  os.Getenv("JWT_ACCESS_TOKEN_SECRET"),
+		JwtRefreshSecret: os.Getenv("JWT_REFRESH_TOKEN_SECRET"),
+		JwtAccessExpiry:  os.Getenv("JWT_ACCESS_TOKEN_EXPIRY"),
+		JwtRefreshExpiry: os.Getenv("JWT_REFRESH_TOKEN_EXPIRY"),
 	}
 }
