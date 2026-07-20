@@ -1,0 +1,21 @@
+# Version control
+.git
+.gitignore
+
+# Environment files — never bake secrets into the image
+.env
+.env.*
+!.env.example
+
+# Go build artifacts
+tmp/
+main
+
+# Editor and OS files
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Air live-reload config (dev only)
+.air.toml

@@ -70,6 +70,21 @@ func bookingErrorResponse(c *echo.Context, err error) error {
 	})
 }
 
+// CreateBooking godoc
+// @Summary      Create a new booking
+// @Description  Reserves tickets for a specific event for the authenticated user.
+// @Tags         Bookings
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body      dto.CreateRequest  true  "Booking Creation Details"
+// @Success      201      {object}  dto.Response
+// @Failure      400      {object}  httpresponse.Error
+// @Failure      401      {object}  httpresponse.Error
+// @Failure      404      {object}  httpresponse.Error
+// @Failure      409      {object}  httpresponse.Error
+// @Failure      500      {object}  httpresponse.Error
+// @Router       /api/v1/bookings [post]
 func (h *handler) CreateBooking(c *echo.Context) error {
 	userId, ok := getCurrentUserID(c)
 	if !ok {
@@ -105,6 +120,16 @@ func (h *handler) CreateBooking(c *echo.Context) error {
 	return c.JSON(http.StatusCreated, response)
 }
 
+// GetMyBookings godoc
+// @Summary      List my bookings
+// @Description  Retrieves all bookings made by the currently authenticated user.
+// @Tags         Bookings
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {array}   dto.Response
+// @Failure      401      {object}  httpresponse.Error
+// @Failure      500      {object}  httpresponse.Error
+// @Router       /api/v1/bookings/me [get]
 func (h *handler) GetMyBookings(c *echo.Context) error {
 	userId, ok := getCurrentUserID(c)
 	if !ok {
