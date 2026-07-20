@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	jwtSecretKey           = "your_secret_key"
+	jwtAccessSecretKey     = "your_access_secret_key"
+	jwtRefreshSecretKey    = "your_refresh_secret_key"
 	accessTokenExpiryTime  = 24 * time.Hour
 	refreshTokenExpiryTime = 30 * 24 * time.Hour
 )
@@ -23,24 +24,29 @@ type JwtCustomClaims struct {
 
 type JWTService interface {
 	GenerateToken(userId uint, name string, email string) (string, string, error)
-	ValidateToken(tokenString string) (*JwtCustomClaims, error)
+	ValidateToken(tokenString string, isRefresh bool) (*JwtCustomClaims, error)
 }
 
 type jwtService struct {
-	jwtSecretKey    []byte
-	accessTokenExp  time.Duration
-	refreshTokenExp time.Duration
+	jwtAccessSecretKey  []byte
+	jwtRefreshSecretKey []byte
+	accessTokenExp      time.Duration
+	refreshTokenExp     time.Duration
 }
 
-func NewJWTService(secretKey string) JWTService {
+func NewJWTService(accessSecretKey, refreshSecretKey string) JWTService {
 
-	if secretKey == "" {
-		secretKey = jwtSecretKey
+	if accessSecretKey == "" {
+		accessSecretKey = jwtAccessSecretKey
+	}
+	if refreshSecretKey == "" {
+		refreshSecretKey = jwtRefreshSecretKey
 	}
 	return &jwtService{
-		jwtSecretKey:    []byte(secretKey),
-		accessTokenExp:  accessTokenExpiryTime,
-		refreshTokenExp: refreshTokenExpiryTime,
+		jwtAccessSecretKey:  []byte(accessSecretKey),
+		jwtRefreshSecretKey: []byte(refreshSecretKey),
+		accessTokenExp:      accessTokenExpiryTime,
+		refreshTokenExp:     refreshTokenExpiryTime,
 	}
 }
 
@@ -55,7 +61,7 @@ func (js *jwtService) GenerateToken(userId uint, name string, email string) (str
 		},
 	}
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	aToken, err := accessToken.SignedString(js.jwtSecretKey)
+	aToken, err := accessToken.SignedString(js.jwtAccessSecretKey)
 	if err != nil {
 		return "", "", err
 	}
@@ -70,7 +76,7 @@ func (js *jwtService) GenerateToken(userId uint, name string, email string) (str
 		},
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	rToken, err := refreshToken.SignedString(js.jwtSecretKey)
+	rToken, err := refreshToken.SignedString(js.jwtRefreshSecretKey)
 	if err != nil {
 		return "", "", err
 	}
@@ -78,12 +84,15 @@ func (js *jwtService) GenerateToken(userId uint, name string, email string) (str
 	return aToken, rToken, nil
 }
 
-func (js *jwtService) ValidateToken(tokenString string) (*JwtCustomClaims, error) {
+func (js *jwtService) ValidateToken(tokenString string, isRefresh bool) (*JwtCustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return js.jwtSecretKey, nil
+		if isRefresh {
+			return js.jwtRefreshSecretKey, nil
+		}
+		return js.jwtAccessSecretKey, nil
 	})
 	if err != nil {
 		return nil, err

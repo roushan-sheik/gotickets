@@ -27,7 +27,7 @@ func AuthMiddleware(jwtService auth.JWTService) echo.MiddlewareFunc {
 			if tokenString == "" {
 				return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Missing Authorization header or cookie"})
 			}
-			claims, err := jwtService.ValidateToken(tokenString)
+			claims, err := jwtService.ValidateToken(tokenString, false)
 			if err != nil {
 				return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid or expired token"})
 			}

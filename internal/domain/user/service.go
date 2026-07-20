@@ -105,7 +105,7 @@ func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
 }
 
 func (s *service) RefreshToken(token string) (*dto.Response, error) {
-	_, err := s.jwt.ValidateToken(token)
+	_, err := s.jwt.ValidateToken(token, true)
 	if err != nil {
 		return nil, errors.New("invalid refresh token")
 	}
