@@ -1,0 +1,521 @@
+basePath: /
+definitions:
+  auth.JwtCustomClaims:
+    properties:
+      aud:
+        description: the `aud` (Audience) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3
+        items:
+          type: string
+        type: array
+      email:
+        type: string
+      exp:
+        allOf:
+        - $ref: '#/definitions/jwt.NumericDate'
+        description: the `exp` (Expiration Time) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4
+      iat:
+        allOf:
+        - $ref: '#/definitions/jwt.NumericDate'
+        description: the `iat` (Issued At) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6
+      iss:
+        description: the `iss` (Issuer) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
+        type: string
+      jti:
+        description: the `jti` (JWT ID) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7
+        type: string
+      name:
+        type: string
+      nbf:
+        allOf:
+        - $ref: '#/definitions/jwt.NumericDate'
+        description: the `nbf` (Not Before) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5
+      sub:
+        description: the `sub` (Subject) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.UpdateRequest:
+    properties:
+      description:
+        maxLength: 1000
+        type: string
+      location:
+        type: string
+      price:
+        minimum: 0
+        type: integer
+      starts_at:
+        type: string
+      title:
+        maxLength: 150
+        minLength: 2
+        type: string
+    type: object
+  gotickets_internal_domain_booking_dto.CreateRequest:
+    properties:
+      event_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - event_id
+    - quantity
+    type: object
+  gotickets_internal_domain_booking_dto.Response:
+    properties:
+      booking_code:
+        type: string
+      created_at:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      quantity:
+        type: integer
+      status:
+        type: string
+      total_price:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  gotickets_internal_domain_event_dto.CreateRequest:
+    properties:
+      description:
+        maxLength: 1000
+        type: string
+      location:
+        type: string
+      price:
+        minimum: 0
+        type: integer
+      starts_at:
+        type: string
+      title:
+        maxLength: 150
+        minLength: 2
+        type: string
+      total_tickets:
+        type: integer
+    required:
+    - location
+    - starts_at
+    - title
+    - total_tickets
+    type: object
+  gotickets_internal_domain_event_dto.Response:
+    properties:
+      available_tickets:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      price:
+        type: integer
+      starts_at:
+        type: string
+      title:
+        type: string
+      total_tickets:
+        type: integer
+    type: object
+  gotickets_internal_domain_user_dto.CreateRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  gotickets_internal_domain_user_dto.Response:
+    properties:
+      access_token:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  httpresponse.Error:
+    properties:
+      code:
+        type: integer
+      details:
+        type: string
+      message:
+        type: string
+    type: object
+  jwt.NumericDate:
+    properties:
+      time.Time:
+        type: string
+    type: object
+host: localhost:5000
+info:
+  contact:
+    email: support@gotickets.local
+    name: API Support
+  description: A professional backend service for a ticket booking platform.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: GoTickets API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Root endpoint to verify the API is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Welcome to GoTickets API
+      tags:
+      - System
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns access and refresh tokens.
+      parameters:
+      - description: User Login Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_user_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: Login user
+      tags:
+      - Auth
+  /api/v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Generates a new access token using a valid refresh token.
+      parameters:
+      - description: Refresh Token (Optional if provided in cookies)
+        in: body
+        name: request
+        schema:
+          properties:
+            refresh_token:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_user_dto.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: Refresh Access Token
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account and returns access and refresh tokens.
+      parameters:
+      - description: User Registration Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gotickets_internal_domain_user_dto.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_user_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: Register a new user
+      tags:
+      - Auth
+  /api/v1/bookings:
+    post:
+      consumes:
+      - application/json
+      description: Reserves tickets for a specific event for the authenticated user.
+      parameters:
+      - description: Booking Creation Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gotickets_internal_domain_booking_dto.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_booking_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      security:
+      - BearerAuth: []
+      summary: Create a new booking
+      tags:
+      - Bookings
+  /api/v1/bookings/me:
+    get:
+      description: Retrieves all bookings made by the currently authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/gotickets_internal_domain_booking_dto.Response'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      security:
+      - BearerAuth: []
+      summary: List my bookings
+      tags:
+      - Bookings
+  /api/v1/events:
+    get:
+      description: Retrieves a list of all available events.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/gotickets_internal_domain_event_dto.Response'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: List all events
+      tags:
+      - Events
+    post:
+      consumes:
+      - application/json
+      description: Creates a new event with the provided details.
+      parameters:
+      - description: Event Creation Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gotickets_internal_domain_event_dto.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_event_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: Create a new event
+      tags:
+      - Events
+  /api/v1/events/{id}:
+    get:
+      description: Retrieves the details of a specific event by its ID.
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_event_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: Get event by ID
+      tags:
+      - Events
+    patch:
+      consumes:
+      - application/json
+      description: Updates the details of a specific event by its ID.
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event Update Details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gotickets_internal_domain_event_dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      summary: Update an event
+      tags:
+      - Events
+  /api/v1/users/me:
+    get:
+      consumes:
+      - application/json
+      description: Returns the profile of the currently authenticated user based on
+        the JWT token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.JwtCustomClaims'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpresponse.Error'
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - Users
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check the health status of the API and Database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health Check
+      tags:
+      - System
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

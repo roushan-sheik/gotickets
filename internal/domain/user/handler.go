@@ -20,6 +20,16 @@ func NewHandler(service *service) *handler {
 	}
 }
 
+// CreateUser godoc
+// @Summary      Register a new user
+// @Description  Creates a new user account and returns access and refresh tokens.
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.CreateRequest  true  "User Registration Details"
+// @Success      200      {object}  dto.Response
+// @Failure      400      {object}  httpresponse.Error
+// @Router       /api/v1/auth/register [post]
 func (h *handler) CreateUser(c *echo.Context) error {
 	var req dto.CreateRequest
 
@@ -42,6 +52,16 @@ func (h *handler) CreateUser(c *echo.Context) error {
 
 }
 
+// LoginUser godoc
+// @Summary      Login user
+// @Description  Authenticates a user and returns access and refresh tokens.
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.LoginRequest  true  "User Login Details"
+// @Success      200      {object}  dto.Response
+// @Failure      400      {object}  httpresponse.Error
+// @Router       /api/v1/auth/login [post]
 func (h *handler) LoginUser(c *echo.Context) error {
 	var req dto.LoginRequest
 
@@ -63,6 +83,16 @@ func (h *handler) LoginUser(c *echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+// GetMe godoc
+// @Summary      Get current user profile
+// @Description  Returns the profile of the currently authenticated user based on the JWT token.
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {object}  auth.JwtCustomClaims
+// @Failure      401      {object}  httpresponse.Error
+// @Router       /api/v1/users/me [get]
 func (h *handler) GetMe(c *echo.Context) error {
 	userClaims, ok := c.Get("user").(*auth.JwtCustomClaims)
 	if !ok {
@@ -88,6 +118,16 @@ func setTokensInCookies(c *echo.Context, accessToken, refreshToken string) {
 	})
 }
 
+// RefreshToken godoc
+// @Summary      Refresh Access Token
+// @Description  Generates a new access token using a valid refresh token.
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      object{refresh_token=string}  false  "Refresh Token (Optional if provided in cookies)"
+// @Success      200      {object}  dto.Response
+// @Failure      401      {object}  httpresponse.Error
+// @Router       /api/v1/auth/refresh [post]
 func (h *handler) RefreshToken(c *echo.Context) error {
 	var token string
 	if cookie, err := c.Cookie("refresh_token"); err == nil {

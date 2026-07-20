@@ -9,9 +9,11 @@ import (
 	"net/http"
 	"time"
 
+	_ "gotickets/docs"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"gorm.io/gorm"
 )
 
@@ -34,16 +36,51 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.RequestLogger())
 
-	e.GET("/", func(c *echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message":     "Welcome to GoTickets API",
-			"version":     "1.0.0",
-			"environment": "development",
-			"status":      "active",
-		})
-	})
+	e.GET("/", WelcomeHandler)
+	e.GET("/health", HealthCheckHandler(db))
+	
+	// Swagger UI Route
+	e.GET("/swagger/*", echo.WrapHandler(httpSwagger.Handler()))
 
-	e.GET("/health", func(c *echo.Context) error {
+	//routes
+	user.RegisterRoutes(e, db, cfg)
+	event.RegisterRoutes(e, db)
+	booking.RegisterRoutes(e, db, cfg)
+
+	port := fmt.Sprintf(":%s", cfg.Port)
+	fmt.Printf("\033[1;32m🚀 Server is running on http://localhost:%s\033[0m\n", cfg.Port)
+	if err := e.Start(port); err != nil {
+		e.Logger.Error("failed to start server", "error", err)
+	}
+}
+
+// WelcomeHandler godoc
+// @Summary      Welcome to GoTickets API
+// @Description  Root endpoint to verify the API is running
+// @Tags         System
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       / [get]
+func WelcomeHandler(c *echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message":     "Welcome to GoTickets API",
+		"version":     "1.0.0",
+		"environment": "development",
+		"status":      "active",
+	})
+}
+
+// HealthCheckHandler godoc
+// @Summary      Health Check
+// @Description  Check the health status of the API and Database
+// @Tags         System
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}
+// @Router       /health [get]
+func HealthCheckHandler(db *gorm.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
 		dbStatus := "up"
 		sqlDB, err := db.DB()
 		if err != nil || sqlDB.Ping() != nil {
@@ -55,16 +92,5 @@ func Start(db *gorm.DB, cfg *config.Config) {
 			"database":  dbStatus,
 			"timestamp": time.Now().Format(time.RFC3339),
 		})
-	})
-
-	//routes
-	user.RegisterRoutes(e, db, cfg)
-	event.RegisterRoutes(e, db)
-	booking.RegisterRoutes(e, db, cfg)
-
-	port := fmt.Sprintf(":%s", cfg.Port)
-	fmt.Printf("\033[1;32m🚀 Server is running on http://localhost:%s\033[0m\n", cfg.Port)
-	if err := e.Start(port); err != nil {
-		e.Logger.Error("failed to start server", "error", err)
 	}
 }
