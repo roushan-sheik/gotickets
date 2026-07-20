@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gotickets/internal/auth"
-	"gotickets/internal/user/dto"
+	"gotickets/internal/domain/user/dto"
 )
 
 var ErrInvalidCredentials = errors.New("invalid email or password")

@@ -3,7 +3,7 @@ package user
 import (
 	"gotickets/internal/auth"
 	"gotickets/internal/httpresponse"
-	"gotickets/internal/user/dto"
+	"gotickets/internal/domain/user/dto"
 	"net/http"
 	"time"
 
