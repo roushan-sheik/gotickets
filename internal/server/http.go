@@ -7,6 +7,7 @@ import (
 	"gotickets/internal/domain/event"
 	"gotickets/internal/domain/user"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v5"
@@ -33,8 +34,27 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.RequestLogger())
 
+	e.GET("/", func(c *echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "Welcome to GoTickets API",
+			"version": "1.0.0",
+			"environment": "development",
+			"status":  "active",
+		})
+	})
+
 	e.GET("/health", func(c *echo.Context) error {
-		return c.String(http.StatusOK, "running")
+		dbStatus := "up"
+		sqlDB, err := db.DB()
+		if err != nil || sqlDB.Ping() != nil {
+			dbStatus = "down"
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status": "up",
+			"database": dbStatus,
+			"timestamp": time.Now().Format(time.RFC3339),
+		})
 	})
 
 	//routes
