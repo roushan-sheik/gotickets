@@ -1,33 +1,51 @@
-# Project Structure
+# GoTickets API
 
-This project follows a standard Go project layout, utilizing a layered architecture (Handler, Service, Repository) to maintain a clean separation of concerns.
+GoTickets is a robust backend service for a ticket booking platform, implemented in Go. It provides comprehensive functionality for user authentication, event lifecycle management, and ticket reservations. The service is built on top of the Echo web framework and utilizes GORM for data persistence.
 
-## Directory Layout
+## Architecture
+
+This project strictly adheres to a Domain-Driven Design (DDD) layered architecture to ensure a clean separation of concerns, high maintainability, and testability.
+
+The application is modularized within the `internal/` directory:
+
+### Directory Layout
 
 ```text
 .
-├── cmd/                        # Main applications for this project
-│   └── main.go                 # Application entry point, router setup, database connection, and dependency injection
+├── cmd/                        # Main application entry point
+│   └── main.go                 
 ├── internal/                   # Private application and library code
-│   ├── config/                 # Configuration loading and environment variables handling
-│   ├── httpresponse/           # Standardized HTTP response wrappers and error handling
-│   │   └── error.go            # Custom HTTP error structure implementing the `error` interface
-│   └── user/                   # User domain module
-│       ├── dto/                # Data Transfer Objects (Request/Response schemas)
-│       │   ├── request.go      # Input payload structures for User APIs
-│       │   └── response.go     # Output payload structures for User APIs
-│       ├── entity.go           # Database models/entities for the User domain (GORM)
-│       ├── handler.go          # HTTP transport layer (Echo handlers mapping requests to services)
-│       ├── repository.go       # Data access layer (Database interactions for Users)
-│       └── service.go          # Business logic layer (Core application rules for Users)
-├── go.mod                      # Go module dependencies file
-└── go.sum                      # Go module checksums file
+│   ├── auth/                   # JWT authentication and authorization utilities
+│   ├── config/                 # Environment configuration and database initialization
+│   ├── domain/                 # Core business domains
+│   │   ├── booking/            # Ticket reservation and booking logic
+│   │   ├── event/              # Event management logic
+│   │   └── user/               # User identity and profile management
+│   ├── httpresponse/           # Standardized HTTP error and response handling
+│   ├── middlewares/            # HTTP middleware components (e.g., Auth, Logging)
+│   └── server/                 # HTTP server configuration and bootstrap
+├── go.mod                      # Module dependencies
+└── go.sum                      # Module checksums
 ```
 
-## Architecture Layers (User Domain)
+### Domain Module Structure
 
-1. **Handler (`handler.go`)**: The presentation layer. It is responsible for parsing HTTP requests, input validation, and formatting HTTP responses. It delegates the actual work to the Service layer.
-2. **Service (`service.go`)**: The business logic layer. It contains the core logic of the application. It receives validated data from handlers, applies business rules, and communicates with the Repository layer.
-3. **Repository (`repository.go`)**: The data access layer. It is responsible for direct interactions with the database (e.g., executing SQL queries via GORM). It abstracts the database operations away from the Service layer.
-4. **Entity (`entity.go`)**: The database schema representation. Used by GORM for migrations and querying.
-5. **DTO (`dto/`)**: Structures used specifically for API requests and responses, keeping the API contract decoupled from the internal database entities.
+Each domain within `internal/domain/` (e.g., `booking`, `user`) implements a standardized layered pattern:
+
+1. **Handler (`handler.go`)**: The transport layer. Responsible for request parsing, input validation, and HTTP response formatting. Handlers delegate core processing to the Service layer.
+2. **Service (`service.go`)**: The business logic layer. Encapsulates domain-specific rules and orchestrates data flow between Handlers and Repositories.
+3. **Repository (`repository.go`)**: The data access layer. Abstracts all database interactions, allowing the Service layer to remain agnostic of the underlying storage implementation.
+4. **Entity (`entity.go`)**: Database schema definitions, utilized by GORM for ORM mapping and migrations.
+5. **DTO (`dto/`)**: Data Transfer Objects defining strict API contracts for request and response payloads, ensuring internal entities are not directly exposed.
+6. **Register (`register.go`)**: Dependency injection and route registration for the specific domain module.
+
+## Technology Stack
+
+- **Language:** Go (Golang)
+- **Web Framework:** [Echo v5](https://echo.labstack.com/)
+- **ORM:** [GORM](https://gorm.io/)
+- **Authentication:** JWT (JSON Web Tokens)
+
+---
+
+*This repository serves as a reference implementation for structuring scalable Go applications.*
