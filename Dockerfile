@@ -3,6 +3,9 @@
 # ==============================================================================
 FROM golang:1.23-alpine AS builder
 
+# Allow Go to automatically manage toolchain version requirements.
+ENV GOTOOLCHAIN=auto
+
 WORKDIR /app
 
 # Copy dependency manifests and download modules.
