@@ -17,7 +17,7 @@ func RegisterRoutes(e *echo.Echo, db *gorm.DB, cfg *config.Config) {
 	svc := NewService(bookingRepo, eventRepo)
 	handler := NewHandler(svc)
 
-	jwtService := auth.NewJWTService(cfg.JwtAccessSecret, cfg.JwtRefreshSecret)
+	jwtService := auth.NewJWTService(cfg.JwtAccessSecret, cfg.JwtRefreshSecret, cfg.JwtAccessExpiry, cfg.JwtRefreshExpiry)
 
 	api := e.Group("/api/v1/bookings", middlewares.AuthMiddleware(jwtService))
 

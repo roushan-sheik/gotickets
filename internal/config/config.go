@@ -12,6 +12,8 @@ type Config struct {
 	Dsn              string
 	JwtAccessSecret  string
 	JwtRefreshSecret string
+	JwtAccessExpiry  string
+	JwtRefreshExpiry string
 }
 
 func LoadEnv() *Config {
@@ -26,5 +28,7 @@ func LoadEnv() *Config {
 		Dsn:              os.Getenv("DSN"),
 		JwtAccessSecret:  os.Getenv("JWT_ACCESS_SECRET"),
 		JwtRefreshSecret: os.Getenv("JWT_REFRESH_SECRET"),
+		JwtAccessExpiry:  os.Getenv("JWT_ACCESS_EXPIRY"),
+		JwtRefreshExpiry: os.Getenv("JWT_REFRESH_EXPIRY"),
 	}
 }

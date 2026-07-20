@@ -9,10 +9,8 @@ import (
 )
 
 const (
-	jwtAccessSecretKey     = "your_access_secret_key"
-	jwtRefreshSecretKey    = "your_refresh_secret_key"
-	accessTokenExpiryTime  = 24 * time.Hour
-	refreshTokenExpiryTime = 30 * 24 * time.Hour
+	jwtAccessSecretKey  = "your_access_secret_key"
+	jwtRefreshSecretKey = "your_refresh_secret_key"
 )
 
 type JwtCustomClaims struct {
@@ -34,7 +32,7 @@ type jwtService struct {
 	refreshTokenExp     time.Duration
 }
 
-func NewJWTService(accessSecretKey, refreshSecretKey string) JWTService {
+func NewJWTService(accessSecretKey, refreshSecretKey, accessExpiry, refreshExpiry string) JWTService {
 
 	if accessSecretKey == "" {
 		accessSecretKey = jwtAccessSecretKey
@@ -42,11 +40,22 @@ func NewJWTService(accessSecretKey, refreshSecretKey string) JWTService {
 	if refreshSecretKey == "" {
 		refreshSecretKey = jwtRefreshSecretKey
 	}
+
+	accExp, err := time.ParseDuration(accessExpiry)
+	if err != nil || accExp == 0 {
+		accExp = 24 * time.Hour
+	}
+
+	refExp, err := time.ParseDuration(refreshExpiry)
+	if err != nil || refExp == 0 {
+		refExp = 30 * 24 * time.Hour
+	}
+
 	return &jwtService{
 		jwtAccessSecretKey:  []byte(accessSecretKey),
 		jwtRefreshSecretKey: []byte(refreshSecretKey),
-		accessTokenExp:      accessTokenExpiryTime,
-		refreshTokenExp:     refreshTokenExpiryTime,
+		accessTokenExp:      accExp,
+		refreshTokenExp:     refExp,
 	}
 }
 

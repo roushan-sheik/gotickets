@@ -11,7 +11,7 @@ import (
 
 func RegisterRoutes(e *echo.Echo, db *gorm.DB, cfg *config.Config) {
 	userRepository := NewRepository(db)
-	jwtService := auth.NewJWTService(cfg.JwtAccessSecret, cfg.JwtRefreshSecret)
+	jwtService := auth.NewJWTService(cfg.JwtAccessSecret, cfg.JwtRefreshSecret, cfg.JwtAccessExpiry, cfg.JwtRefreshExpiry)
 	userService := NewService(userRepository, jwtService)
 	userHandler := NewHandler(userService)
 
