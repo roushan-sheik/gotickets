@@ -72,15 +72,8 @@ air
 
 The server starts at `http://localhost:5000`.
 
-### Option 2: Docker — Development with Hot Reload
 
-Source code is volume-mounted into the container. Any file change on your host triggers an automatic rebuild inside Docker.
-
-```bash
-docker compose -f docker-compose.dev.yml up --build
-```
-
-### Option 3: Docker — Production Build
+### Option 2: Docker — Production Build
 
 Builds an optimized, minimal binary image (~15MB). Use this for staging and production deployments.
 
