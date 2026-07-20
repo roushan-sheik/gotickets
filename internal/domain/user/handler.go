@@ -27,7 +27,7 @@ func NewHandler(service *service) *handler {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      dto.CreateRequest  true  "User Registration Details"
-// @Success      200      {object}  dto.Response
+// @Success      201      {object}  dto.Response
 // @Failure      400      {object}  httpresponse.Error
 // @Router       /api/v1/auth/register [post]
 func (h *handler) CreateUser(c *echo.Context) error {
@@ -48,7 +48,7 @@ func (h *handler) CreateUser(c *echo.Context) error {
 
 	setTokensInCookies(c, response.AccessToken, response.RefreshToken)
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusCreated, response)
 
 }
 

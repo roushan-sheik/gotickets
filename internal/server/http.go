@@ -9,40 +9,39 @@ import (
 	"net/http"
 	"time"
 
-	_ "gotickets/docs"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
-	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"gorm.io/gorm"
 )
 
-type CustomValidator struct {
+type customValidator struct {
 	validator *validator.Validate
 }
 
-func (cv *CustomValidator) Validate(i any) error {
+func (cv *customValidator) Validate(i any) error {
 	if err := cv.validator.Struct(i); err != nil {
-		// Optionally, you could return the error to give each route more control over the status code
 		return echo.ErrBadRequest.Wrap(err)
 	}
 	return nil
 }
 
+// Start initializes and runs the HTTP server.
 func Start(db *gorm.DB, cfg *config.Config) {
 	db.AutoMigrate(&user.User{}, &event.Event{}, &booking.Booking{})
 
 	e := echo.New()
-	e.Validator = &CustomValidator{validator: validator.New()}
+	e.Validator = &customValidator{validator: validator.New()}
 	e.Use(middleware.RequestLogger())
 
+	// System routes
 	e.GET("/", WelcomeHandler)
 	e.GET("/health", HealthCheckHandler(db))
-	
-	// Swagger UI Route
-	e.GET("/swagger/*", echo.WrapHandler(httpSwagger.Handler()))
 
-	//routes
+	// Documentation
+	RegisterSwagger(e)
+
+	// Domain routes
 	user.RegisterRoutes(e, db, cfg)
 	event.RegisterRoutes(e, db)
 	booking.RegisterRoutes(e, db, cfg)
@@ -56,28 +55,26 @@ func Start(db *gorm.DB, cfg *config.Config) {
 
 // WelcomeHandler godoc
 // @Summary      Welcome to GoTickets API
-// @Description  Root endpoint to verify the API is running
+// @Description  Root endpoint to verify the API is running.
 // @Tags         System
-// @Accept       json
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  WelcomeResponse
 // @Router       / [get]
 func WelcomeHandler(c *echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message":     "Welcome to GoTickets API",
-		"version":     "1.0.0",
-		"environment": "development",
-		"status":      "active",
+	return c.JSON(http.StatusOK, WelcomeResponse{
+		Message:     "Welcome to GoTickets API",
+		Version:     "1.0.0",
+		Environment: "development",
+		Status:      "active",
 	})
 }
 
 // HealthCheckHandler godoc
 // @Summary      Health Check
-// @Description  Check the health status of the API and Database
+// @Description  Check the health status of the API and the database connection.
 // @Tags         System
-// @Accept       json
 // @Produce      json
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  HealthResponse
 // @Router       /health [get]
 func HealthCheckHandler(db *gorm.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
@@ -87,10 +84,10 @@ func HealthCheckHandler(db *gorm.DB) echo.HandlerFunc {
 			dbStatus = "down"
 		}
 
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status":    "up",
-			"database":  dbStatus,
-			"timestamp": time.Now().Format(time.RFC3339),
+		return c.JSON(http.StatusOK, HealthResponse{
+			Status:    "up",
+			Database:  dbStatus,
+			Timestamp: time.Now().Format(time.RFC3339),
 		})
 	}
 }

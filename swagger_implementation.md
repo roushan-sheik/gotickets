@@ -119,7 +119,7 @@ Finally, you must run the `swag init` command to parse all your comments and gen
 
 Run this command in the root of your project:
 ```bash
-swag init -g cmd/main.go --parseDependency --parseInternal
+swag init -g cmd/api_info.go --parseDependency --parseInternal
 ```
 
 **Why these flags?**

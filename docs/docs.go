@@ -25,10 +25,7 @@ const docTemplate = `{
     "paths": {
         "/": {
             "get": {
-                "description": "Root endpoint to verify the API is running",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Root endpoint to verify the API is running.",
                 "produces": [
                     "application/json"
                 ],
@@ -40,8 +37,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/internal_server.WelcomeResponse"
                         }
                     }
                 }
@@ -67,7 +63,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginRequest"
+                            "$ref": "#/definitions/gotickets_internal_domain_user_dto.LoginRequest"
                         }
                     }
                 ],
@@ -81,7 +77,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -125,7 +121,7 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -156,8 +152,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/gotickets_internal_domain_user_dto.Response"
                         }
@@ -165,7 +161,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -210,31 +206,31 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -268,13 +264,13 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -303,7 +299,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -341,13 +337,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -382,19 +378,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -425,7 +421,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateRequest"
+                            "$ref": "#/definitions/gotickets_internal_domain_event_dto.UpdateRequest"
                         }
                     }
                 ],
@@ -439,19 +435,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -479,13 +475,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.JwtCustomClaims"
+                            "$ref": "#/definitions/gotickets_internal_auth.JwtCustomClaims"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/httpresponse.Error"
+                            "$ref": "#/definitions/gotickets_internal_httpresponse.Error"
                         }
                     }
                 }
@@ -493,10 +489,7 @@ const docTemplate = `{
         },
         "/health": {
             "get": {
-                "description": "Check the health status of the API and Database",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Check the health status of the API and the database connection.",
                 "produces": [
                     "application/json"
                 ],
@@ -508,8 +501,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/internal_server.HealthResponse"
                         }
                     }
                 }
@@ -517,7 +509,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.JwtCustomClaims": {
+        "gotickets_internal_auth.JwtCustomClaims": {
             "type": "object",
             "properties": {
                 "aud": {
@@ -571,46 +563,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "dto.LoginRequest": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
-                }
-            }
-        },
-        "dto.UpdateRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 1000
-                },
-                "location": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "starts_at": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 150,
-                    "minLength": 2
                 }
             }
         },
@@ -723,6 +675,30 @@ const docTemplate = `{
                 }
             }
         },
+        "gotickets_internal_domain_event_dto.UpdateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 1000
+                },
+                "location": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "starts_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 2
+                }
+            }
+        },
         "gotickets_internal_domain_user_dto.CreateRequest": {
             "type": "object",
             "required": [
@@ -735,6 +711,22 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "gotickets_internal_domain_user_dto.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
                     "type": "string"
                 },
                 "password": {
@@ -766,7 +758,7 @@ const docTemplate = `{
                 }
             }
         },
-        "httpresponse.Error": {
+        "gotickets_internal_httpresponse.Error": {
             "type": "object",
             "properties": {
                 "code": {
@@ -776,6 +768,37 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_server.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "database": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_server.WelcomeResponse": {
+            "type": "object",
+            "properties": {
+                "environment": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }
