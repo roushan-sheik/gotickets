@@ -36,10 +36,10 @@ func Start(db *gorm.DB, cfg *config.Config) {
 
 	e.GET("/", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"message": "Welcome to GoTickets API",
-			"version": "1.0.0",
+			"message":     "Welcome to GoTickets API",
+			"version":     "1.0.0",
 			"environment": "development",
-			"status":  "active",
+			"status":      "active",
 		})
 	})
 
@@ -51,8 +51,8 @@ func Start(db *gorm.DB, cfg *config.Config) {
 		}
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status": "up",
-			"database": dbStatus,
+			"status":    "up",
+			"database":  dbStatus,
 			"timestamp": time.Now().Format(time.RFC3339),
 		})
 	})
@@ -63,6 +63,7 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	booking.RegisterRoutes(e, db, cfg)
 
 	port := fmt.Sprintf(":%s", cfg.Port)
+	fmt.Printf("\033[1;32m🚀 Server is running on http://localhost:%s\033[0m\n", cfg.Port)
 	if err := e.Start(port); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
 	}
